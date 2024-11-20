@@ -1,0 +1,46 @@
+version: '3.8'
+
+networks:
+  demo-network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:15.3
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: tarvos
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d tarvos"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.60.0
+    container_name: jaeger
+    ports:
+      - "8081:16686"
+    command: >
+      --log-level=debug
+    depends_on:
+      - postgres  
+    networks:
+      - demo-network 
+
+  otel-collector:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: otel-collector
+    ports:
+      - "4317:4317"
+    depends_on:
+      - postgres
+      - jaeger
+    networks:
+      - demo-network 
