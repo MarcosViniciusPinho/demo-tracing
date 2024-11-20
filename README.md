@@ -97,8 +97,8 @@ curl --location 'http://localhost:8000/pessoas' \
 
 obs: Para matar todas as dependencias de serviços utilize o Make com o seguinte comando:
 
-    ```bash
-    make docker-destroy
-    ```
+```bash
+make docker-destroy
+```
 
 Para visualizar os traces basta digitar o endereço `http://localhost:8081`
